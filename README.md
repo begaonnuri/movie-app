@@ -1,2 +1,2 @@
 # movie-app
-Movie app with React JS
+Movie app made with React JS
