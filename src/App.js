@@ -3,48 +3,38 @@ import './App.css';
 import Movie from './Movie';
 
 class App extends Component {
-  state = {
-    greeting: "Hello!",
-    movies: [
-      {
-        title : "Matrix",
-        poster : "https://images-na.ssl-images-amazon.com/images/I/51aTgPXVFJL.jpg"
-      },
-      {
-        title : "Full Metal Jacket",
-        poster : "https://images-na.ssl-images-amazon.com/images/I/41TvQPuP-XL._SY450_.jpg"
-      },
-      {
-        title : "Oldboy",
-        poster : "https://cdn.shopify.com/s/files/1/1416/8662/products/oldboy_2003_italian_1p_original_film_art_2000x.jpg?v=1551892951"
-      },
-      {
-        title: "Star Wars",
-        poster: "https://imgix.ranker.com/user_node_img/50076/1001511915/original/the-very-first-_star-war_-poster-photo-u1?w=650&q=50&fm=pjpg&fit=crop&crop=faces"
-      }
-    ]
+  state = {}
+
+  componentDidMount(){
+    this._getMovies();
   }
-  
-componentDidMount(){
-  setTimeout(() => {
-    this.setState({
-      movies: [
-        ...this.state.movies,
-        {
-          title: "Transpotting",
-          poster: "https://imgix.ranker.com/user_node_img/50076/1001511915/original/the-very-first-_star-war_-poster-photo-u1?w=650&q=50&fm=pjpg&fit=crop&crop=faces"
-        }
-      ]
+
+  _renderMovies = () => {
+    const movies = this.state.movies.map(movie => {
+      console.log(movie)
+      return <Movie title={movie.title} poster={movie.large_cover_image} key={movie.id}/>
     })
-  }, 5000)
-}
+    return movies
+  }
+
+  _getMovies = async () => {
+    const movies = await this._callApi()
+    this.setState({
+      movies
+    })
+  }
+
+  _callApi = () => {
+    return fetch('https://yts.ag/api/v2/list_movies.json?sort_by=rating')
+    .then(response => response.json())
+    .then(json => json.data.movies)
+    .catch(err => console.log(err))
+  }
 
   render() {
     return (
       <div className="App">
-        {this.state.movies.map((movie, index) => {
-          return <Movie title={movie.title} poster={movie.poster} key={index}/>
-        })}
+        {this.state.movies ? this._renderMovies() : "Loading"}
       </div>
     );
   }
